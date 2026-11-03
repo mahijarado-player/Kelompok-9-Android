@@ -1,1 +1,12 @@
-# Kelompok-9-Android
+# KELOMPOK BASIS DATA 9 (ANDROID)
+
+## ANGGOTA
+* **Nama Anggota:** AFRIN RACHMAD SETIO
+* **NIM:** 264311004
+* **Nama Anggota:** BERTHA SAMPOERNA
+* **NIM:** 264311008
+* **Nama Anggota:** MAHIJA PARAMA URDHA
+* **NIM:** 264311020
+* **Kelas:** 1A
+
+---
