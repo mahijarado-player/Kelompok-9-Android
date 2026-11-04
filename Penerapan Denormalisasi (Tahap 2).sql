@@ -1,0 +1,51 @@
+-- A. DDL tabel rekapitulasi
+CREATE TABLE rekap_lahan (
+    id_lahan                INT PRIMARY KEY,
+    nama_petani             VARCHAR(100) NOT NULL,
+    nama_lahan              VARCHAR(100) NOT NULL,
+    komoditas               VARCHAR(100) NOT NULL,
+    rata_rata_kelembapan    DECIMAL(5,2) NULL,
+    jumlah_notif_kelembapan INT NOT NULL DEFAULT 0,
+    jumlah_notif_cuaca      INT NOT NULL DEFAULT 0,
+    jumlah_notif_hama       INT NOT NULL DEFAULT 0,
+    total_notifikasi        INT NOT NULL DEFAULT 0,
+    terakhir_diperbarui     TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                            ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- B. Isi dengan hasil perhitungan Tahap 1
+INSERT INTO rekap_lahan
+    (id_lahan, nama_petani, nama_lahan, komoditas, rata_rata_kelembapan,
+     jumlah_notif_kelembapan, jumlah_notif_cuaca, jumlah_notif_hama, total_notifikasi)
+SELECT
+    l.id_lahan, pt.nama_petani, l.nama_lahan, l.komoditas,
+    k.rata_rata_kelembapan,
+    COALESCE(k.notif_kelembapan, 0),
+    COALESCE(c.notif_cuaca, 0),
+    COALESCE(h.notif_hama, 0),
+    COALESCE(k.notif_kelembapan, 0) + COALESCE(c.notif_cuaca, 0) + COALESCE(h.notif_hama, 0)
+FROM petani pt
+JOIN lahan l ON l.id_petani = pt.id_petani
+LEFT JOIN (
+    SELECT s.id_lahan,
+           ROUND(AVG(p.nilai_kelembapan), 2) AS rata_rata_kelembapan,
+           COUNT(n.id_notifikasi_kelembapan) AS notif_kelembapan
+    FROM sensor_kelembapan s
+    JOIN pembacaan_kelembapan p ON p.id_sensor_kelembapan = s.id_sensor_kelembapan
+    LEFT JOIN notifikasi_kelembapan n ON n.id_pembacaan_kelembapan = p.id_pembacaan_kelembapan
+    GROUP BY s.id_lahan
+) k ON k.id_lahan = l.id_lahan
+LEFT JOIN (
+    SELECT sc.id_lahan, COUNT(nc.id_notifikasi_cuaca) AS notif_cuaca
+    FROM sensor_cuaca sc
+    JOIN data_cuaca dc ON dc.id_sensor_cuaca = sc.id_sensor_cuaca
+    LEFT JOIN notifikasi_cuaca nc ON nc.id_data_cuaca = dc.id_data_cuaca
+    GROUP BY sc.id_lahan
+) c ON c.id_lahan = l.id_lahan
+LEFT JOIN (
+    SELECT sh.id_lahan, COUNT(nh.id_notifikasi_hama) AS notif_hama
+    FROM sensor_hama sh
+    JOIN pembacaan_hama ph ON ph.id_sensor_hama = sh.id_sensor_hama
+    LEFT JOIN notifikasi_hama nh ON nh.id_pembacaan_hama = ph.id_pembacaan_hama
+    GROUP BY sh.id_lahan
+) h ON h.id_lahan = l.id_lahan;
