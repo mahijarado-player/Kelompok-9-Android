@@ -8,13 +8,3 @@
 * **Nama Anggota:** MAHIJA PARAMA URDHA
 * **NIM:** 264311020
 * **Kelas:** 1A
-
----
-
-### Languages & Tools
-
-<p align="left">
-  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vscode/vscode-original.svg" alt="VS Code" width="48" height="48" />
-  <img src="https://api.iconify.design/vscode-icons/file-type-sql.svg" alt="SQL" width="48" height="48" />
-  <img src="https://api.iconify.design/flat-color-icons/database.svg" alt="Database" width="48" height="48" />
-</p>
